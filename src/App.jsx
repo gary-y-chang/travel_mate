@@ -21,7 +21,7 @@ function App() {
   return (
     <AuthProvider>
     <CitiesProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/travel_mate">
         <Routes>
             {/* { !isAuthenticated && <Route index element={<Navigate to="login" replace />} /> } */}
             <Route index element={<Homepage />} />
