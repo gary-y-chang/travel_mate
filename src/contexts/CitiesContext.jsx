@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useReducer } from "react";
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js";
 import { useAuth } from "./AuthContext";
 
 const CitiesContext = createContext();
@@ -49,7 +49,8 @@ function reducer(state, action) {
   }
 }
 
-const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+// const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+const API_BASE = "http://167.71.216.175:3030";
 
 function CitiesProvider({ children}) {
   const { user } = useAuth();
@@ -63,9 +64,9 @@ function CitiesProvider({ children}) {
       try {
         dispatch({type: "API/LOADING"});
        
-        // const response = await fetch('http://localhost:8000/cities');
-        // const data = await response.json();
-        const { data, error } = await supabase.from("City").select().eq("userId", user.id);
+        const response = await fetch(`${API_BASE}/city`);
+        const data = await response.json();
+        // const { data, error } = await supabase.from("City").select().eq("userId", user.id);
         if (error) throw error
         console.log(data);
         
@@ -86,13 +87,13 @@ function CitiesProvider({ children}) {
 
   async function getCityData(id) {
     // fetch city data from backend
-    if (Number(id) === currentCity.id) return; // if the city is already the current city, do nothing
+    if (id === currentCity.id) return; // if the city is already the current city, do nothing
     try{
     dispatch({type: "API/LOADING"});
-    // const res = await fetch(`http://localhost:8000/cities/${id}`);
-    // const data = await res.json();
+    const res = await fetch(`${API_BASE}/city?id=eq.${id}`);
+    const data = await res.json();
     // console.log(data);
-    const { data, error } = await supabase.from('City').select().eq('id', id)
+    // const { data, error } = await supabase.from('City').select().eq('id', id)
     if (error) throw error
     
     console.log(data[0])
@@ -106,20 +107,22 @@ function CitiesProvider({ children}) {
 
   async function createCityData(newCity) {
     try{
+      //  console.log(`In createCityData -----`, newCity);
+      //  console.log("Stringify:  ", JSON.stringify(newCity));
       dispatch({type: "API/LOADING"});
-      // const res = await fetch(`http://localhost:8000/cities`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(newCity),
-      // });
+      const res = await fetch(`${API_BASE}/city`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCity),
+      });
+     
       // const data = await res.json();
-      const { data, error } = await supabase.from('City').insert({...newCity, userId: user.id}).select();
+      // const { data, error } = await supabase.from('City').insert({...newCity, userId: user.id}).select();
       if (error) throw error
-
-      console.log(data);
-      dispatch({type: "CITY/ADDED", payload: data[0]});
+      // console.log(data);
+      dispatch({type: "CITY/ADDED", payload: newCity});
     } catch (error) {
       console.error("Error creating city data:", error);
       dispatch({type: "API/ERROR", payload: "Error creating city data"});
@@ -129,7 +132,7 @@ function CitiesProvider({ children}) {
   async function deleteCityData(id) {
     try{
       dispatch({type: "API/LOADING"});
-      await fetch(`http://localhost:8000/cities/${id}`, {
+      await fetch(`${API_BASE}/city?id=eq.${id}`, {
         method: 'DELETE'
       });
    

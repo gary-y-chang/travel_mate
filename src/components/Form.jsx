@@ -64,7 +64,9 @@ function Form() {
     e.preventDefault();
     if (!cityName || !date || !lat || !lng) return;
 
+    const id = crypto.randomUUID();
     const newCity = {
+      id,
       cityName,
       country,
       emoji,

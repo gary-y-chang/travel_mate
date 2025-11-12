@@ -1,5 +1,5 @@
 import { createContext , useContext, useReducer} from "react";
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js";
 import Login from "../pages/Login";
 
 const AuthContext = createContext();
@@ -54,7 +54,7 @@ function reducer(state, action) {
 //     avatar: "https://i.pravatar.cc/100?u=zz",
 //   };
 
-const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+// const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
 
 function AuthProvider({ children }) {
 
@@ -65,10 +65,10 @@ function AuthProvider({ children }) {
     // login logic here (e.g., API call)
     try{
         dispatch({type: "API/LOADING"});
-        // const res = await fetch(`http://localhost:8000/users?email=${email}&password=${password}`);
-        // const data = await res.json();
+        const res = await fetch(`http://167.71.216.175:3030/user?email=eq.${email}&password=eq.${password}`);
+        const data = await res.json();
         
-        const { data, error } = await supabase.from("User").select().match({email: email, password: password});
+        // const { data, error } = await supabase.from("User").select().match({email: email, password: password});
         if (error) throw error
 
         if (data.length === 0) {
