@@ -11,6 +11,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useCities } from "../contexts/CitiesContext";
 import { useNavigate } from "react-router";
+import { useAuth } from "../contexts/AuthContext";
 
  function convertToEmoji(countryCode) {
    const codePoints = countryCode
@@ -31,6 +32,8 @@ function Form() {
   const [locationError, setLocationError] = useState("");
   const {createCityData, isLoading: isAPILoading } = useCities();
   const navigate = useNavigate();
+
+  const { user } = useAuth();
 
   useEffect(() => {
     if (lat && lng) {
@@ -64,18 +67,17 @@ function Form() {
     e.preventDefault();
     if (!cityName || !date || !lat || !lng) return;
 
-    const id = crypto.randomUUID();
     const newCity = {
-      id,
       cityName,
       country,
       emoji,
       date: date.toISOString(),
       notes,
       lat: +lat,
-      lng: +lng
+      lng: +lng,
+      userId: user.id
     };
-    console.log(newCity);
+    console.log("in the form: ", newCity);
     
     await createCityData(newCity);
     navigate('/app/cities');

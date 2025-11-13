@@ -14,9 +14,10 @@ const formatDate = (date) =>
   }).format(new Date(date));
 
 const CityItem = ({city}) => {
-    // console.log(city);
+    //  console.log(city);
     const { currentCity, deleteCityData, isLoading } = useCities();
-    const { cityName, emoji, date, id, lat, lng } = city;
+    const { cityName, emoji, created: date, id, lat, lng } = city;
+    // console.log("lat: ", lat, "lng: ", lng);
 
     function handleClick(e) {
         e.preventDefault();

@@ -27,7 +27,7 @@ function User() {
   if (isLoading) return <Spinner />;
   return (
     <div className={styles.user}>
-      <img src={user.avatar} alt={user.name} />
+      <img src={user.icon} alt={user.name} />
       <span>Welcome, {user.name}</span>
       <button onClick={handleClick}>Logout</button>
     </div>

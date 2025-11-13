@@ -6,6 +6,7 @@ const AuthContext = createContext();
 
 const initialState = {
   user: null,
+  authToken: null,
   isAuthenticated: false,
   isLoading: false,
   error: null
@@ -16,7 +17,8 @@ function reducer(state, action) {
     case "USER/LOGIN":
       return {
         ...state,
-        user: action.payload,
+        user: action.payload.record,
+        authToken: action.payload.token,
         isAuthenticated: true,
         isLoading: false,
         error: null
@@ -55,29 +57,43 @@ function reducer(state, action) {
 //   };
 
 // const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+const API_BASE = "https://pocketbase-a6njm.sevalla.app/api/collections";
 
 function AuthProvider({ children }) {
 
 
-  const [{user, isAuthenticated, isLoading, error}, dispatch] = useReducer(reducer, initialState);
+  const [{user, authToken, isAuthenticated, isLoading, error}, dispatch] = useReducer(reducer, initialState);
 
   async function login(email, password) {
     // login logic here (e.g., API call)
     try{
         dispatch({type: "API/LOADING"});
-        const res = await fetch(`http://167.71.216.175:3030/user?email=eq.${email}&password=eq.${password}`);
+        const res = await fetch(`${API_BASE}/users/auth-with-password`, 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({identity: email, password: password})
+            }
+        );
+        if(res.status === 400) {
+          dispatch({type: "USER/LOGIN_FAILURE", payload: "Invalid email or password"});
+          return;
+        }
+        
         const data = await res.json();
         
         // const { data, error } = await supabase.from("User").select().match({email: email, password: password});
-        if (error) throw error
+        // if (error) throw error
 
-        if (data.length === 0) {
-            dispatch({type: "USER/LOGIN_FAILURE", payload: "Invalid email or password"});
-            return;
-        }
+        // if (data.length === 0) {
+        //     dispatch({type: "USER/LOGIN_FAILURE", payload: "Invalid email or password"});
+        //     return;
+        // }
 
-        console.log(data[0]);
-        dispatch({type: "USER/LOGIN", payload: data[0]});
+        console.log(data);
+        dispatch({type: "USER/LOGIN", payload: data});
 
     }catch(error){
         console.error("Error logging in:", error);
@@ -98,6 +114,7 @@ function AuthProvider({ children }) {
 
   return <AuthContext.Provider value={{ 
         user,
+        authToken,
         isAuthenticated,
         isLoading,
         error,

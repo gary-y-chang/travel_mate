@@ -50,10 +50,10 @@ function reducer(state, action) {
 }
 
 // const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
-const API_BASE = "http://167.71.216.175:3030";
+const API_BASE = "https://pocketbase-a6njm.sevalla.app/api/collections";
 
 function CitiesProvider({ children}) {
-  const { user } = useAuth();
+  const { user, authToken } = useAuth();
   const [{cities, isLoading, currentCity, error }, dispatch] = useReducer(reducer, initialState);
   // const [cities, setCities] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
@@ -64,13 +64,22 @@ function CitiesProvider({ children}) {
       try {
         dispatch({type: "API/LOADING"});
        
-        const response = await fetch(`${API_BASE}/city`);
-        const data = await response.json();
+        const res = await fetch(`${API_BASE}/city/records`, { 
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }});
+        if(res.status != 200) {
+          dispatch({type: "API/ERROR", payload: "Error fetching cities."});
+          return;
+        }
+        const data = await res.json();
         // const { data, error } = await supabase.from("City").select().eq("userId", user.id);
         if (error) throw error
-        console.log(data);
+        console.log("fetch cities :", data.items);
+        console.log("token", authToken);
         
-        dispatch({type: "CITIES/LOADED", payload: data});
+        dispatch({type: "CITIES/LOADED", payload: data.items});
         // setCities(data);
         // setIsLoading(false);
         // console.log("isAuthenticated: ", isAuthenticated);
@@ -90,14 +99,19 @@ function CitiesProvider({ children}) {
     if (id === currentCity.id) return; // if the city is already the current city, do nothing
     try{
     dispatch({type: "API/LOADING"});
-    const res = await fetch(`${API_BASE}/city?id=eq.${id}`);
+    const res = await fetch(`${API_BASE}/city/records/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      } 
+    });
     const data = await res.json();
     // console.log(data);
     // const { data, error } = await supabase.from('City').select().eq('id', id)
     if (error) throw error
     
-    console.log(data[0])
-    dispatch({type: "CITY/LOADED", payload: data[0]});
+    console.log(data)
+    dispatch({type: "CITY/LOADED", payload: data});
     // setCurrentCity(data);
     } catch (error) {
     console.error("Error fetching city data:", error);
@@ -107,13 +121,14 @@ function CitiesProvider({ children}) {
 
   async function createCityData(newCity) {
     try{
-      //  console.log(`In createCityData -----`, newCity);
-      //  console.log("Stringify:  ", JSON.stringify(newCity));
+       console.log(`In createCityData -----`, newCity);
+       console.log("Stringify:  ", JSON.stringify(newCity));
       dispatch({type: "API/LOADING"});
-      const res = await fetch(`${API_BASE}/city`, {
+      const res = await fetch(`${API_BASE}/city/records`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify(newCity),
       });
@@ -132,8 +147,11 @@ function CitiesProvider({ children}) {
   async function deleteCityData(id) {
     try{
       dispatch({type: "API/LOADING"});
-      await fetch(`${API_BASE}/city?id=eq.${id}`, {
-        method: 'DELETE'
+      await fetch(`${API_BASE}/city/records/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        } 
       });
    
       dispatch({type: "CITY/DELETED", payload: id});
