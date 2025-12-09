@@ -28,7 +28,7 @@ function City() {
   // const [error, setError] = useState(null);
 
 
-  const { cityName, emoji, date, notes } = currentCity;
+  const { cityName, emoji, created, notes } = currentCity;
 
 
   useEffect(() => {
@@ -62,7 +62,7 @@ function City() {
 
       <div className={styles.row}>
         <h6>You went to {cityName} on</h6>
-        <p>{formatDate(date || null)}</p>
+        <p>{formatDate(created || null)}</p>
       </div>
       <div className={styles.row}>
         <h6>Position: {lat}, {lng}</h6>

@@ -71,7 +71,7 @@ function Form() {
       cityName,
       country,
       emoji,
-      date: date.toISOString(),
+      created: date.toISOString(),
       notes,
       lat: +lat,
       lng: +lng,
@@ -107,11 +107,6 @@ function Form() {
           selected={date}
           dateFormat="yyyy-MM-dd"
         />
-        {/* <input
-          id="date"
-          onChange={(e) => setDate(e.target.value)}
-          value={date}
-        /> */}
       </div>
 
       <div className={styles.row}>

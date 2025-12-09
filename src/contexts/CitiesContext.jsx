@@ -133,11 +133,11 @@ function CitiesProvider({ children}) {
         body: JSON.stringify(newCity),
       });
      
-      // const data = await res.json();
+      const data = await res.json();
       // const { data, error } = await supabase.from('City').insert({...newCity, userId: user.id}).select();
       if (error) throw error
-      // console.log(data);
-      dispatch({type: "CITY/ADDED", payload: newCity});
+      console.log(data);
+      dispatch({type: "CITY/ADDED", payload: data});
     } catch (error) {
       console.error("Error creating city data:", error);
       dispatch({type: "API/ERROR", payload: "Error creating city data"});

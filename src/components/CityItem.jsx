@@ -16,9 +16,8 @@ const formatDate = (date) =>
 const CityItem = ({city}) => {
     //  console.log(city);
     const { currentCity, deleteCityData, isLoading } = useCities();
-    const { cityName, emoji, created: date, id, lat, lng } = city;
-    // console.log("lat: ", lat, "lng: ", lng);
-
+    const { cityName, emoji, created, id, lat, lng } = city;
+    
     function handleClick(e) {
         e.preventDefault();
         console.log(`click to delete city id ${id}`);
@@ -33,7 +32,7 @@ const CityItem = ({city}) => {
           to={`${id}?lat=${lat}&lng=${lng}`}> {/* this would attach city it to current url, which is /app/cities/{id} */}
             <span className={styles.emoji}>{emoji}</span>
             <h3 className={styles.name}>{cityName}</h3> 
-            <time className={styles.date}>{formatDate(date || null)}</time>
+            <time className={styles.date}>{formatDate(created || null)}</time>
             <button className={styles.deleteBtn} title="Delete" onClick={handleClick}>&times;</button>
             {/* <Button onclick={() => console.log('delete') } type={'back'}>&times;Delete</Button>  */}
         </Link>
